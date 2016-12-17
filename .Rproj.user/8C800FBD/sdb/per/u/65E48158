@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(ggplot2)\nlibrary(RColorBrewer)\nlibrary(plyr)\nlibrary(randomForest)\nlibrary(reprtree)\n\n#Load Dataset\nsetwd(\"~/Desktop\")\nmydata <- read.csv(\"movie_metadata.csv\")\nset.seed(9487)\nmydata[mydata==\"\"] <- NA\nmydata <- na.omit(mydata)\n\n#Count face number over 5 as string \"over 5\"\nfacefreq <- count(mydata, 'facenumber_in_poster')\nmydata$count <- as.character(mydata$facenumber_in_poster)\nmydata$count[mydata$facenumber_in_poster>5] <- \"over 5\"\n\n# Plot histograms of facenumber_in_poster and frequency of imdb_score \nhist(mydata$facenumber_in_poster, breaks = 50)\nhist(mydata$imdb_score, breaks = 50)\n# Plot scatter plot of imdb_score, gross and frequency of imdb_score\nsp <- ggplot(mydata, aes(x = gross, y = imdb_score, color = count)) +\n  geom_point() \nsp + scale_colour_discrete(drop=TRUE,\n                           limits = levels(mydata$count))\n\n\n#Create dummy variables for catagorical variables\n# for(level in unique(mydata$language)){\n#   mydata[paste(\"dummy\", level, sep = \"_\")] <- ifelse(mydata$language == level, 1, 0)\n# }\n# for(level in unique(mydata$country)){\n#   mydata[paste(\"dummy\", level, sep = \"_\")] <- ifelse(mydata$country == level, 1, 0)\n# }\n# for(level in unique(mydata$content_rating)){\n#   mydata[paste(\"dummy\", level, sep = \"_\")] <- ifelse(mydata$content_rating == level, 1, 0)\n# }\n# for(level in unique(mydata$title_year)){\n#   mydata[paste(\"dummy\", level, sep = \"_\")] <- ifelse(mydata$title_year == level, 1, 0)\n# }\n# for(level in unique(mydata$aspect_ratio)){\n#   mydata[paste(\"dummy\", level, sep = \"_\")] <- ifelse(mydata$aspect_ratio == level, 1, 0)\n# }\n\nnames(mydata) <- make.names(names(mydata))\n\n#Remove unused variables, including which will be unavailable before a movie is released \nmydata$id <- NULL\nmydata$genres <- NULL\nmydata$language <- NULL\nmydata$country <- NULL\nmydata$content_rating <- NULL\nmydata$title_year <- NULL\nmydata$aspect_ratio <- NULL\nmydata$cast_total_facebook_likes <- NULL\nmydata$gross <- NULL\nmydata$num_critic_for_reviews <- NULL\nmydata$num_voted_users <- NULL\nmydata$movie_facebook_likes <- NULL\nmydata$actor_3_name <- NULL\nmydata$actor_2_name <- NULL\nmydata$actor_1_name <- NULL\nmydata$movie_title <- NULL\nmydata$plot_keywords <- NULL\nmydata$movie_imdb_link <- NULL\nmydata$director_name <- NULL\n\n#Generate training set and testing set\ntraining_size <- floor(0.80 * nrow(mydata))\ntrain_ind <- sample(seq_len(nrow(mydata)), size = training_size)\ntraining <- mydata[train_ind, ]\ntesting <- mydata[-train_ind, ]\ntraining <- na.omit(training)\ntesting <- na.omit(testing)\n\n\n#Random forest\nfit <- randomForest(imdb_score ~., data = training)\nplot(fit)\nvarImpPlot(fit,type=2)\nPrediction <- predict(fit, testing)\n\n",
+    "created" : 1481813375979.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "2647906230",
+    "id" : "65E48158",
+    "lastKnownWriteTime" : 4294967296,
+    "last_content_update" : 1481981163062,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

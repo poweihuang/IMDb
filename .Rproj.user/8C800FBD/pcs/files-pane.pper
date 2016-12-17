@@ -1,0 +1,9 @@
+{
+    "path" : "~/R/IMDb",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
